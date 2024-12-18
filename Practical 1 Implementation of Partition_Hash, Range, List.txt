@@ -1,0 +1,181 @@
+Q.1 (A) - Create book table ( book_id (pk),  title, author, price, book_rating  ) with range 
+partition on rating with rating 1, 2 and 3 for three different partitions. Insert at least 10 
+records in the table.
+
+
+
+CREATE TABLE books(
+book_id INT PRIMARY KEY,
+title VARCHAR(150),
+author VARCHAR(100),
+price NUMBER,
+book_rating INT
+)
+PARTITION BY RANGE(book_rating)(
+PARTITION p1 VALUES LESS THAN (2),
+PARTITION p2 VALUES LESS THAN (3),
+PARTITION p3 VALUES LESS THAN(4)
+)
+
+
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (1, 'Romeo and Juliet', 'William Shakespeare', 1200.00,3);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (2, 'The world as I see it', 'Albert Einstein', 200.00,2);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (3, 'Principia', 'Isaac Newton', 240.50,3);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (4, 'A Bunch of Old Letter', 'Jawaharlal Nehru', 175.50,2);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (5, 'Anandmath', 'Bankim Chandra Chatterjee', 1290.00,1);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (6, 'An Autobiography', 'Jawaharlal Nehru', 190.00,3);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (7, 'Broken Wings', 'Sarojini Naidu', 350.50,2);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (8, 'Bubble', 'Mulk Raj Anand', 150.00,1);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (9, 'By God's Decree', 'Kapil Dev', 160.50,2);
+INSERT INTO books (book_id, title, author, price, book_rating) VALUES (10, 'Court Dancer', 'Rabindranath Tagore', 1240.50,3);
+
+Q.1 (B) Display all the books with the rating 2 and price in the range 200 and 1000. 
+
+SELECT * FROM books WHERE book_rating = 2 AND price BETWEEN 200 AND 1000;
+
+Q.2 (A) -  Create 3 partition in table cabinet using Range partition on cid Column of cabinet 
+(cid, mem_name,  address,  state_rep, phone_number, sal)  P1 cid <101 ; P2 cid<501 ; P3 cid 
+<1001. Insert at least 10 records in the table.
+
+
+CREATE TABLE cabinet (
+    cid INT,
+    mem_name VARCHAR(255),
+    address VARCHAR(255),
+    state_rep VARCHAR(255),
+    phone_number VARCHAR(15),
+    sal NUMBER(10)
+)
+PARTITION BY RANGE (cid) (
+    PARTITION P1 VALUES LESS THAN (101),
+    PARTITION P2 VALUES LESS THAN (501),
+    PARTITION P3 VALUES LESS THAN (1001)
+);
+
+
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (20, 'Omkar Gawas', 'Mirzole', 'Rep A', '123-456-78', 50000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (50, 'Patu Harmalkar', 'Redi vengurla', 'Rep B', '987-654-3210', 40000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (75, 'Akshay Sawant', 'Sawantwadi', 'Rep C', '456-789-0123', 55000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (150, 'Deep Aravandekar', 'Aronda vengurla', 'Rep D', '321-654-9878', 70000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (200, 'Tushar Desai', 'Dodamarg', 'Rep E', '654-321-0987', 65000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (300, 'Dipak Gawade', 'Camp Vengurla', 'Rep F', '789-012-3456', 72000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (400, 'Mayur Gawade', 'Amboli Sawantwadi', 'Rep G', '123-789-4560', 68000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (550, 'Pajwal Muthye', 'Pernem Goa', 'Rep H', '789-654-1230', 75000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (700, 'Aditya Gawandi', 'Redi Vengurla', 'Rep I', '345-678-9012', 80000.00);
+INSERT INTO cabinet (cid, mem_name, address, state_rep, phone_number, sal) VALUES (900, 'Siddesh Gulekar', 'Sawantwadi', 'Rep J', '678-901-2345', 78000.00);
+
+
+Q 2 (B) - Display the content of the third partition 
+
+SELECT * FROM cabinet PARTITION(p3);
+
+
+
+Q 3 (A)-Create table Employee with attributes empid, name, age, salary and joining date by 
+using hash partition based on employee salary with minimum3 partitions. Insert at least 10 
+records in the table.
+
+
+CREATE TABLE Employee (
+    empid INT PRIMARY KEY,
+    name VARCHAR(255),
+    age INT,
+    salary DECIMAL(10, 2),
+    joining_date DATE
+)
+PARTITION BY HASH (salary) (
+    PARTITION P1,
+    PARTITION P2,
+    PARTITION P3
+);
+
+
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (1, 'Nishat Chile', 28, 60000.00, To_date('2022-05-10', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (2, 'Glen Desouza', 28, 60000.00, To_date('2021-05-10', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (3, 'Michael Johnson', 35, 70000.00, To_date('2020-09-01', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (4, 'Akshay Sawant', 26, 55000.00, To_date('2023-03-20', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (5, 'Omkar Gawas', 20, 80000.00, To_date('2019-12-11', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (6, 'Patu Harmalkar', 22, 62000.00, To_date('2022-08-30', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (7, 'Deep Aravandekar', 21, 58000.00, To_date('2023-01-25', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (8, 'Tushar Desai', 31, 75000.00, To_date('2020-06-15', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (9, 'Sid Gulekar', 27, 48000.00, To_date('2023-04-18', 'yyyy-mm-dd'));
+INSERT INTO Employee (empid, name, age, salary, joining_date) VALUES (10, 'Sail Jadhav', 21, 90000.00, To_date('2018-11-02', 'yyyy-mm-dd'));
+
+
+Q 3 (B) -Display the information about the employee in the third partition.
+
+SELECT * FROM Employee PARTITION(p3);
+
+
+Q 4- Create test_record(test_id, test_type, patient_name, employee_no, labno, result) with list 
+partition on result field as : P1=(positive) P2=(negative) Insert at least 10 records in the table. 
+Display the test_records which have negative result.
+
+CREATE TABLE test_record (
+    test_id INT PRIMARY KEY,
+    test_type VARCHAR(255),
+    patient_name VARCHAR(255),
+    employee_no INT,
+    labno VARCHAR(50),
+    result VARCHAR(50)
+)
+PARTITION BY LIST (result) (
+    PARTITION P1 VALUES ('positive'),
+    PARTITION P2 VALUES ('negative')
+);
+
+
+
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (1, 'Blood Test', 'Deep Arondekar', 101, 'L1001', 'positive');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (2, 'Urine Test', 'Aditya Gawandi', 102, 'L1002', 'negative');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (3, 'COVID-19 Test', 'Akshay Sawant', 103, 'L1003', 'positive');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (4, 'X-ray', 'Patu Harmalkar', 104, 'L1004', 'negative');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (5, 'Blood Test', 'Omkar Gawas', 105, 'L1005', 'positive');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (6, 'Urine Test', 'Tushar Desai', 106, 'L1006', 'negative');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (7, 'MRI', 'James Taylor', 107, 'L1007', 'positive');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (8, 'CT Scan', 'Tushar Naik', 108, 'L1008', 'negative');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (9, 'Blood Test', 'Lalit Naik', 109, 'L1009', 'positive');
+INSERT INTO test_record (test_id, test_type, patient_name, employee_no, labno, result) VALUES (10, 'X-ray', 'Hans Tulaskar', 110, 'L1010', 'negative');
+
+
+
+SELECT * FROM test_record WHERE result = 'negative';
+
+
+Q 5 (A)-Create table Bank with fields Bankld, BName, Location. Partition the Bank table 
+based on Location as per following.  
+BK1 = (Mumbai, Pune, Nashik), BK2 = (Lucknow, Kanpur, Varanasi)  
+BK3 = (Chandigarh, Mohali, Amritsar), BK4 = (GandhiNagar, Ahmedabad, Surat)  
+Insert 10 records in Bank table.
+
+
+CREATE TABLE Bank (
+    Bankid INT PRIMARY KEY,
+    BName VARCHAR(255),
+    Location VARCHAR(255)
+)
+PARTITION BY LIST (Location) (
+    PARTITION BK1 VALUES ('Mumbai', 'Pune', 'Nashik'),
+    PARTITION BK2 VALUES ('Lucknow', 'Kanpur', 'Varanasi'),
+    PARTITION BK3 VALUES ('Chandigarh', 'Mohali', 'Amritsar'),
+    PARTITION BK4 VALUES ('Gandhinagar', 'Ahmedabad', 'Surat')
+);
+
+
+
+INSERT INTO Bank (BankId, BName, Location) VALUES (1, 'Punjab National Bank', 'Varanasi');
+INSERT INTO Bank (BankId, BName, Location) VALUES (2, 'Yes Bank', 'Chandigarh');
+INSERT INTO Bank (BankId, BName, Location) VALUES (3, 'Kotak Mahindra Bank', 'Mohali');
+INSERT INTO Bank (BankId, BName, Location) VALUES (4, 'IndusInd Bank', 'Ahmedabad');
+INSERT INTO Bank (BankId, BName, Location) VALUES (5, 'Union Bank', 'Surat');
+INSERT INTO Bank (BankId, BName, Location) VALUES (6, 'HDFC Bank', 'Mumbai');
+INSERT INTO Bank (BankId, BName, Location) VALUES (7, 'ICICI Bank', 'Pune');
+INSERT INTO Bank (BankId, BName, Location) VALUES (8, 'Axis Bank', 'Nashik');
+INSERT INTO Bank (BankId, BName, Location) VALUES (9, 'State Bank of India', 'Lucknow');
+INSERT INTO Bank (BankId, BName, Location) VALUES (10, 'Bank of Baroda', 'Kanpur');
+
+
+
+Q 5 (B) - Add values "Ratnagiri" in BK1 partition.
+
+ALTER TABLE Bank MODIFY PARTITION BK1 ADD VALUES('Ratnagiri')

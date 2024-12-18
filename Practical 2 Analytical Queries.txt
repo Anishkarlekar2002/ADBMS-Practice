@@ -1,0 +1,281 @@
+1. Create tables Employee and Department as per the given schema and insert data into 
+them. 
+dept(deptno number(2,0),dname varchar2(14),loc varchar2(13),constraint pk_dept primary 
+key (deptno)); 
+emp(empno number(4,0),ename varchar2(10), job varchar2(9), mgr number(4,0),hiredate 
+date,sal number(7,2),comm number(7,2),deptno number(2,0), constraint pk_emp primary key 
+(empno),constraint fk_deptno foreign key (deptno) references dept (deptno)); 
+
+Answer:
+
+CREATE TABLE dept(
+    deptno NUMBER(2,0),
+    dname VARCHAR2(14),
+    loc VARCHAR2(13),
+    CONSTRAINT pk_dept PRIMARY KEY (deptno)
+);
+
+CREATE TABLE emp(
+    empno NUMBER(4,0),
+    ename VARCHAR2(10),
+    job VARCHAR2(9),
+    mgr NUMBER(4,0),
+    hiredate DATE,
+    sal NUMBER(7,2),
+    comm NUMBER(7,2),
+    deptno NUMBER(2,0),
+    CONSTRAINT pk_emp PRIMARY KEY (empno),
+    CONSTRAINT fk_deptno FOREIGN KEY (deptno) REFERENCES dept(deptno)
+);
+
+
+INSERT INTO dept VALUES (10, 'ACCOUNTING', 'NEW YORK');
+INSERT INTO dept VALUES (20, 'RESEARCH', 'DALLAS');
+INSERT INTO dept VALUES (30, 'SALES', 'CHICAGO');
+INSERT INTO dept VALUES (40, 'OPERATIONS', 'BOSTON');
+
+
+INSERT INTO emp VALUES (7698, 'BLAKE', 'MANAGER', 7839, TO_DATE('1-5-1981', 'dd-mm-yyyy'), 2850, NULL, 30);
+INSERT INTO emp VALUES (7782, 'CLARK', 'MANAGER', 7839, TO_DATE('9-6-1981', 'dd-mm-yyyy'), 2450, NULL, 10);
+INSERT INTO emp VALUES (7566, 'JONES', 'MANAGER', 7839, TO_DATE('2-4-1981', 'dd-mm-yyyy'), 2975, NULL, 20);
+
+
+1. To return the first salary reported in each department. 
+
+SELECT deptno, MIN(sal) AS first_salary
+FROM emp
+GROUP BY deptno;
+
+
+
+2. To show us how the average salary has changed over the years
+
+SELECT EXTRACT(YEAR FROM hiredate) AS year, AVG(sal) AS avg_salary
+FROM emp
+GROUP BY EXTRACT(YEAR FROM hiredate)
+ORDER BY year;
+
+
+3.To display the salary of each employee, along with the lowest and highest within their 
+department 
+
+SELECT e.ename, e.sal, e.deptno,
+       (SELECT MIN(sal) FROM emp WHERE deptno = e.deptno) AS min_salary,
+       (SELECT MAX(sal) FROM emp WHERE deptno = e.deptno) AS max_salary
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno;
+
+
+4. To divide the whole result set into five buckets based on salary
+
+SELECT empno, ename, deptno, sal,
+       NTILE(5) OVER (PARTITION BY deptno ORDER BY sal) AS bucket_no
+FROM emp;
+
+
+5. To display for each employee in Department 30 in the employees table, the hire date 
+of the 
+employee hired just after 
+
+SELECT ename, hiredate,
+       LEAD(hiredate, 1) OVER(ORDER BY hiredate) AS "NEXT HIRED"
+FROM emp
+WHERE deptno = 30
+ORDER BY hiredate;
+
+
+Q2. 2. Create the table Sales and insert records as given. Write analytical queries –
+
+CREATE TABLE Sales (
+    year NUMBER(4),
+    country VARCHAR2(20),
+    product VARCHAR2(20),
+    profit NUMBER(10)
+);
+
+
+INSERT INTO Sales VALUES (2000, 'Finland', 'Computer', 1500);
+INSERT INTO Sales VALUES (2000, 'Finland', 'Phone', 100);
+INSERT INTO Sales VALUES (2001, 'Finland', 'Phone', 10);
+INSERT INTO Sales VALUES (2000, 'India', 'Calculator', 75);
+INSERT INTO Sales VALUES (2000, 'India', 'Calculator', 75);
+INSERT INTO Sales VALUES (2000, 'India', 'Computer', 1200);
+INSERT INTO Sales VALUES (2000, 'USA', 'Calculator', 75);
+INSERT INTO Sales VALUES (2000, 'USA', 'Computer', 1500);
+INSERT INTO Sales VALUES (2001, 'USA', 'Calculator', 50);
+INSERT INTO Sales VALUES (2001, 'USA', 'Computer', 1500);
+INSERT INTO Sales VALUES (2001, 'USA', 'Computer', 1200);
+INSERT INTO Sales VALUES (2001, 'USA', 'TV', 150);
+INSERT INTO Sales VALUES (2001, 'USA', 'TV', 100);
+
+1. To find total profit for each country. 
+
+SELECT country, SUM(profit) AS total_profit
+FROM Sales
+GROUP BY country;
+
+
+2. Display Country with maximum profit. 
+
+SELECT country, SUM(profit) AS total_profit
+FROM Sales
+GROUP BY country
+ORDER BY total_profit DESC
+FETCH FIRST 1 ROWS ONLY;
+
+
+3. Display products with maximum and minimum profit in each country. 
+
+
+SELECT country, product,
+       MAX(profit) AS max_profit,
+       MIN(profit) AS min_profit
+FROM Sales
+GROUP BY country, product;
+
+
+4. Display average sale of each product in each country. 
+
+SELECT country, product, AVG(profit) AS avg_profit
+FROM Sales
+GROUP BY country, product;
+
+
+5. Find total profit product wise. 
+
+SELECT product, SUM(profit) AS total_profit
+FROM Sales
+GROUP BY product;
+
+
+
+Q.3. The research is about to create the star schema for the sales system. The research 
+consists of 
+all the information related to the sale’s record like items, location and the time etc. 
+Create a 
+schema (database) with fact and dimension tables. Perform the OLAP operations on 
+your schema.
+
+Step 1: Create the Fact and Dimension Tables 
+Fact Table: Sales 
+
+CREATE TABLE Sales (
+    item_key NUMBER,
+    loc_key NUMBER,
+    time_key NUMBER,
+    units NUMBER
+);
+
+Dimension Table: Loc (Location)
+
+CREATE TABLE Loc (
+    loc_key NUMBER PRIMARY KEY,
+    city VARCHAR2(50),
+    state VARCHAR2(50),
+    country VARCHAR2(50)
+);
+
+
+Dimension Table: Items
+
+CREATE TABLE Items (
+    item_key NUMBER PRIMARY KEY,
+    item_name VARCHAR2(100),
+    item_category VARCHAR2(50),
+    color VARCHAR2(20),
+    price NUMBER
+);
+
+
+
+Dimension Table: Time
+
+CREATE TABLE Time (
+    time_key NUMBER PRIMARY KEY,
+    sdate DATE,
+    week NUMBER,
+    month NUMBER,
+    quarter NUMBER,
+    syear NUMBER
+);
+
+
+
+Insert Data into Loc (Location) Table
+
+INSERT INTO Loc VALUES (1, 'Mumbai', 'Maharashtra', 'India');
+INSERT INTO Loc VALUES (2, 'Chennai', 'Tamil Nadu', 'India');
+INSERT INTO Loc VALUES (3, 'New York', 'New York', 'USA');
+INSERT INTO Loc VALUES (4, 'San Francisco', 'California', 'USA');
+
+
+
+Insert Data into Items Table
+
+INSERT INTO Items VALUES (101, 'Pen', 'Stationery', 'Blue', 10);
+INSERT INTO Items VALUES (102, 'Jeans', 'Clothing', 'Blue', 1500);
+INSERT INTO Items VALUES (103, 'Laptop', 'Electronics', 'Silver', 50000);
+INSERT INTO Items VALUES (104, 'Phone', 'Electronics', 'Black', 20000);
+
+
+
+Insert Data into Time Table
+
+INSERT INTO Time VALUES (201, TO_DATE('2024-01-15', 'YYYY-MM-DD'), 3, 1, 1, 2024);
+INSERT INTO Time VALUES (202, TO_DATE('2024-04-12', 'YYYY-MM-DD'), 15, 4, 2, 2024);
+INSERT INTO Time VALUES (203, TO_DATE('2024-07-22', 'YYYY-MM-DD'), 30, 7, 3, 2024);
+INSERT INTO Time VALUES (204, TO_DATE('2024-10-05', 'YYYY-MM-DD'), 40, 10, 4, 2024);
+
+
+
+Insert Data into Sales (Fact Table)
+
+INSERT INTO Sales VALUES (101, 1, 201, 500);
+INSERT INTO Sales VALUES (102, 1, 201, 150);
+INSERT INTO Sales VALUES (102, 2, 202, 100);
+INSERT INTO Sales VALUES (101, 2, 202, 300);
+INSERT INTO Sales VALUES (103, 3, 203, 80);
+INSERT INTO Sales VALUES (104, 3, 203, 120);
+INSERT INTO Sales VALUES (103, 4, 204, 50);
+INSERT INTO Sales VALUES (104, 4, 204, 200);
+
+
+
+Step 2: OLAP Queries 
+1. Display data for quarter 1
+
+SELECT * 
+FROM Sales s
+JOIN Time t ON s.time_key = t.time_key
+WHERE t.quarter = 1;
+
+
+
+2. Display total sales of pen or jeans from “mumbai" or “chennai” for quarter 1 or 2.
+
+SELECT SUM(s.units) AS total_sales
+FROM Sales s
+JOIN Loc l ON s.loc_key = l.loc_key
+JOIN Items i ON s.item_key = i.item_key
+JOIN Time t ON s.time_key = t.time_key
+WHERE (i.item_name = 'Pen' OR i.item_name = 'Jeans')
+  AND (l.city = 'Mumbai' OR l.city = 'Chennai')
+  AND (t.quarter = 1 OR t.quarter = 2);
+
+
+
+3. Find the total units sales in each state. 
+
+SELECT l.state, SUM(s.units) AS total_units
+FROM Sales s
+JOIN Loc l ON s.loc_key = l.loc_key
+GROUP BY l.state;
+
+
+
+4. Find the total units sales in each city 
+
+SELECT l.city, SUM(s.units) AS total_units
+FROM Sales s
+JOIN Loc l ON s.loc_key = l.loc_key
+GROUP BY l.city;
